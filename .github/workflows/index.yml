@@ -28,7 +28,6 @@ jobs:
             [ -f "$d/plugin.json" ] || continue
             node tools/cli.mjs test "$d"
           done
-          npm_config_yes=true npx --yes true
           for d in plugins/*/; do
             [ -f "$d/plugin.json" ] || continue
             node tools/pack-plugin.mjs "$d"
