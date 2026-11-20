@@ -1,0 +1,66 @@
+name: Catálogo de plugins
+
+# Valida os manifestos, roda o scanner, empacota os .cdplug, gera e assina o index.json e publica no Release.
+# A chave privada Ed25519 fica no segredo CASTDECK_PLUGIN_SIGN_KEY (conteúdo do PEM).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  catalogo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Valida manifestos e empacota
+        run: |
+          for d in plugins/*/; do
+            [ -f "$d/plugin.json" ] || continue
+            node tools/cli.mjs test "$d"
+          done
+          npm_config_yes=true npx --yes true
+          for d in plugins/*/; do
+            [ -f "$d/plugin.json" ] || continue
+            node tools/pack-plugin.mjs "$d"
+          done
+
+      - name: Gera o índice
+        run: node tools/build-index.mjs
+
+      - name: Assina o índice (Ed25519)
+        if: ${{ github.event_name != 'pull_request' }}
+        env:
+          CHAVE: ${{ secrets.CASTDECK_PLUGIN_SIGN_KEY }}
+        run: |
+          if [ -z "$CHAVE" ]; then echo "::warning::segredo CASTDECK_PLUGIN_SIGN_KEY ausente — índice não assinado"; exit 0; fi
+          printf '%s\n' "$CHAVE" > /tmp/sign.pem
+          node -e '
+            const fs = require("fs"), crypto = require("crypto");
+            const texto = fs.readFileSync("index.json");
+            const key = crypto.createPrivateKey(fs.readFileSync("/tmp/sign.pem", "utf8"));
+            const sig = crypto.sign(null, texto, key).toString("base64");
+            fs.writeFileSync("index.json.sig", sig + "\n");
+            const pub = crypto.createPublicKey(key).export({ format: "der", type: "spki" });
+            fs.writeFileSync("index.json.pub", pub.subarray(pub.length - 32).toString("base64") + "\n");
+            console.log("índice assinado");
+          '
+          rm -f /tmp/sign.pem
+
+      - name: Publica os pacotes no Release
+        if: ${{ github.event_name != 'pull_request' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="catalogo-$(date -u +%Y%m%d-%H%M%S)"
+          gh release create "$TAG" packages/*.cdplug index.json index.json.sig index.json.pub \
+            --title "Catálogo $TAG" --notes "Índice assinado e pacotes .cdplug gerados automaticamente."

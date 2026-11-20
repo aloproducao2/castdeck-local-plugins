@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cast.flue.live/plugins/schema/plugin-v1.json",
+  "title": "Manifesto de plugin do CastDeck (API 1)",
+  "type": "object",
+  "required": ["id", "name", "version", "license", "engines", "tier"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)+$",
+      "description": "Identificador único em minúsculas com ponto (ex.: castdeck.luz, com.autor.meu-plugin)."
+    },
+    "name": { "type": "string", "maxLength": 60 },
+    "description": { "type": "string", "maxLength": 400 },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?$" },
+    "author": {
+      "type": "object",
+      "properties": { "name": { "type": "string" }, "url": { "type": "string" }, "email": { "type": "string" } }
+    },
+    "license": { "type": "string", "description": "Identificador SPDX (ex.: MIT, AGPL-3.0-only)." },
+    "homepage": { "type": "string" },
+    "engines": {
+      "type": "object",
+      "required": ["castdeck", "api"],
+      "properties": {
+        "castdeck": { "type": "string", "description": "Faixa semver do app (ex.: >=2.0.0 <3.0.0)." },
+        "api": { "const": 1 }
+      }
+    },
+    "tier": { "enum": ["declarative", "code"] },
+    "entry": { "type": "string", "description": "Obrigatório no tier code (ex.: src/index.js)." },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(events:chat|events:stage|events:recording|overlay:show|panel:open|control:mixer|control:scene|control:playout|chat:send|storage:own|storage:read:media|secrets:own|webhook:receive|network)(:https?://.+)?$"
+      }
+    },
+    "panels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "entry"],
+        "properties": { "id": {}, "title": {}, "entry": {}, "width": { "type": "number" } }
+      }
+    },
+    "overlays": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "entry"],
+        "properties": { "id": {}, "title": {}, "entry": {}, "size": { "type": "object" } }
+      }
+    },
+    "settings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["key", "type"],
+        "properties": {
+          "key": { "type": "string" },
+          "label": { "type": "string" },
+          "type": { "enum": ["text", "number", "checkbox", "secret"] },
+          "default": {},
+          "required": { "type": "boolean" }
+        }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "description": "Tier declarativo: gatilhos (on) e ações (do).",
+      "items": {
+        "type": "object",
+        "required": ["on", "do"],
+        "properties": {
+          "on": { "enum": ["chat.comando", "chat.regex", "chat.contem", "chat", "doacao", "stage.entrou", "stage.saiu", "scene.mudou", "live.iniciou", "live.encerrou", "gravacao.salva"] },
+          "comando": { "type": "string" },
+          "padrao": { "type": "string" },
+          "flags": { "type": "string" },
+          "texto": { "type": "string" },
+          "cooldownSeg": { "type": "number" },
+          "do": { "type": "array", "items": { "type": "object" } }
+        }
+      }
+    },
+    "i18n": { "type": "array", "items": { "type": "string" } },
+    "keywords": { "type": "array", "items": { "type": "string" } }
+  }
+}

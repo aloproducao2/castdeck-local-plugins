@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-11-20T21:24:00.606Z",
+  "plugins": [
+    {
+      "id": "castdeck.chat-commands",
+      "name": "Comandos de chat",
+      "summary": "Responde comandos do chat (!discord, !sorteio, !redes) com mensagem, aviso na tela ou mídia.",
+      "author": "flue.live — Miguel Kallemback",
+      "license": "AGPL-3.0-only",
+      "tier": "declarative",
+      "latest": "1.0.0",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "api": 1,
+          "castdeck": ">=1.8.25",
+          "file": "packages/castdeck.chat-commands-1.0.0.cdplug",
+          "size": 1596,
+          "sha256": "f2c148589e95c711a87ecfc0d2401fee08a606e886cad2c4d4e80e5a7a76bd1b",
+          "publishedAt": "2026-11-20T21:24:00.602Z",
+          "permissions": [
+            "events:chat",
+            "chat:send",
+            "overlay:show"
+          ],
+          "review": {
+            "state": "approved",
+            "scanner": "pass",
+            "manual": true
+          }
+        }
+      ],
+      "keywords": [],
+      "verified": true,
+      "official": true
+    },
+    {
+      "id": "castdeck.luz",
+      "name": "Luz do convidado",
+      "summary": "Acende uma luz (tomada inteligente, Home Assistant ou ESPHome) quando alguém entra no palco e apaga quando sai.",
+      "author": "flue.live — Miguel Kallemback",
+      "license": "AGPL-3.0-only",
+      "tier": "code",
+      "latest": "1.0.0",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "api": 1,
+          "castdeck": ">=1.8.25",
+          "file": "packages/castdeck.luz-1.0.0.cdplug",
+          "size": 3769,
+          "sha256": "177319312c41783767f64fdc18e99e111733f43261a2c29c59aa6dbc0c6a6133",
+          "publishedAt": "2026-11-20T21:24:00.606Z",
+          "permissions": [
+            "events:stage",
+            "overlay:show",
+            "storage:own",
+            "network:http://127.0.0.1",
+            "network:http://localhost"
+          ],
+          "review": {
+            "state": "approved",
+            "scanner": "pass",
+            "manual": true
+          }
+        }
+      ],
+      "keywords": [],
+      "verified": true,
+      "official": true
+    }
+  ],
+  "revoked": []
+}

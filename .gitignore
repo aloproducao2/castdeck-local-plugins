@@ -1,0 +1,4 @@
+﻿node_modules/
+packages/*.cdplug
+.DS_Store
+*.pem
