@@ -10,8 +10,12 @@ O catálogo é **um índice JSON assinado** (`index.json`) servido pelo próprio
 
 | Plugin | Tipo | O que faz |
 |---|---|---|
-| **Comandos de chat** (`castdeck.chat-commands`) | declarativo | responde `!discord`, `!redes`, `!aviso`, dá boas-vindas a quem chega |
-| **Luz do convidado** (`castdeck.luz`) | código (sandbox) | acende uma tomada inteligente quando alguém entra no palco |
+| **Cronômetro no ar** (`castdeck.timer`) | código (sandbox) | contagem regressiva na tela para intervalo/BRB, com painel próprio e `!timer 5` no chat (aviso persistente) |
+| **Comandos de chat** (`castdeck.chat-commands`) | declarativo | responde `!discord`, `!redes`, `!aviso` e `!ajuda`, dá boas-vindas a quem chega — com aviso na tela |
+
+> O antigo `castdeck.luz` (tomada inteligente) saiu do catálogo; o exemplo de plugin com `network:` e evento
+> de palco virou fixture de teste no app. O cronômetro é o exemplo oficial de plugin com **painel** e
+> **overlay persistente**.
 
 ## Instalar no app
 

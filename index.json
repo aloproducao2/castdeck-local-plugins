@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-21T00:11:47.749Z",
+  "generatedAt": "2026-11-21T05:53:33.935Z",
   "plugins": [
     {
       "id": "castdeck.chat-commands",
@@ -16,9 +16,9 @@
           "api": 1,
           "castdeck": ">=2.0.0",
           "file": "packages/castdeck.chat-commands-1.1.0.cdplug",
-          "size": 3764,
-          "sha256": "82e2d7f943f2ff24a27024fe0be8757c55ed950eddd2235148c4e2a83f44558c",
-          "publishedAt": "2026-11-21T00:11:47.745Z",
+          "size": 1693,
+          "sha256": "08f3aac34e787cfe8bf9f665a1c4c12a18d45d1d420c5352a8a2330cce17773c",
+          "publishedAt": "2026-11-21T05:53:33.931Z",
           "permissions": [
             "events:chat",
             "chat:send",
@@ -36,29 +36,27 @@
       "official": true
     },
     {
-      "id": "castdeck.luz",
-      "name": "Luz do convidado",
-      "summary": "Acende uma luz (tomada inteligente, Home Assistant ou ESPHome) quando alguém entra no palco, apaga quando sai e aceita o comando !luz no chat.",
+      "id": "castdeck.timer",
+      "name": "Cronômetro no ar",
+      "summary": "Contagem regressiva na tela para intervalo, volta do BRB ou tempo de prova: comece pelo painel ou pelo chat (!timer 5) e o público vê o tempo diminuindo, sem precisar de outro programa.",
       "author": "flue.live — Miguel Kallemback",
       "license": "AGPL-3.0-only",
       "tier": "code",
-      "latest": "1.1.0",
+      "latest": "1.0.0",
       "versions": [
         {
-          "version": "1.1.0",
+          "version": "1.0.0",
           "api": 1,
           "castdeck": ">=2.0.0",
-          "file": "packages/castdeck.luz-1.1.0.cdplug",
-          "size": 9610,
-          "sha256": "ea488508cc1b7ceeeb836c44963471f8ad9dcf67e31d7da7379cb5874e7de7a1",
-          "publishedAt": "2026-11-21T00:11:47.749Z",
+          "file": "packages/castdeck.timer-1.0.0.cdplug",
+          "size": 6908,
+          "sha256": "61ee1e4bcd3aff7ddf7ebd8ac05a26346873bb90ed5858dfdc95d28d83a72ef1",
+          "publishedAt": "2026-11-21T05:53:33.935Z",
           "permissions": [
-            "events:stage",
             "events:chat",
             "overlay:show",
-            "storage:own",
-            "network:http://127.0.0.1",
-            "network:http://localhost"
+            "chat:send",
+            "storage:own"
           ],
           "review": {
             "state": "approved",

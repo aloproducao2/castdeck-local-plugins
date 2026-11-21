@@ -129,13 +129,16 @@ async function testar(alvo) {
       log: () => {},
       api: 1,
       plugin: { id: manifesto.id, version: manifesto.version, dataDir: path.join(pasta, 'data') },
-      settings: { get: () => Object.fromEntries((manifesto.settings || []).map((s) => [s.key, s.default])) },
+      settings: {
+        get: () => Object.fromEntries((manifesto.settings || []).map((s) => [s.key, s.default])),
+        save: async (patch = {}) => ({ ...patch }),
+      },
       events: { on: () => {} },
-      overlay: { show: () => {}, hide: () => {} },
-      chat: { send: () => {} },
-      http: { get: () => {}, post: () => {} },
-      sound: { play: () => {} },
-      panel: { open: () => {} },
+      overlay: { show: async () => ({}), hide: async () => ({}) },
+      chat: { send: async () => ({}) },
+      http: { get: async () => ({ ok: true, result: { status: 200 } }), post: async () => ({ ok: true, result: { status: 200 } }) },
+      sound: { play: async () => ({}) },
+      panel: { open: async () => ({}) },
     };
     const mod = await import('file://' + path.join(pasta, manifesto.entry).replace(/\\/g, '/'));
     const activate = mod.default || mod.activate;
