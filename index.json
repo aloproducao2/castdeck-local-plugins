@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-20T21:24:00.606Z",
+  "generatedAt": "2026-11-21T00:11:40.505Z",
   "plugins": [
     {
       "id": "castdeck.chat-commands",
@@ -18,7 +18,7 @@
           "file": "packages/castdeck.chat-commands-1.0.0.cdplug",
           "size": 1596,
           "sha256": "f2c148589e95c711a87ecfc0d2401fee08a606e886cad2c4d4e80e5a7a76bd1b",
-          "publishedAt": "2026-11-20T21:24:00.602Z",
+          "publishedAt": "2026-11-21T00:11:40.467Z",
           "permissions": [
             "events:chat",
             "chat:send",
@@ -51,7 +51,7 @@
           "file": "packages/castdeck.luz-1.0.0.cdplug",
           "size": 3769,
           "sha256": "177319312c41783767f64fdc18e99e111733f43261a2c29c59aa6dbc0c6a6133",
-          "publishedAt": "2026-11-20T21:24:00.606Z",
+          "publishedAt": "2026-11-21T00:11:40.505Z",
           "permissions": [
             "events:stage",
             "overlay:show",
