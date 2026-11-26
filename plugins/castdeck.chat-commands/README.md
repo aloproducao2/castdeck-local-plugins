@@ -1,30 +1,32 @@
-# Comandos de chat
+# Chat commands
 
-Plugin **declarativo** (sem código): responde comandos do chat com mensagem, aviso na tela ou mídia.
+[English](README.md) · [Português](README.pt-BR.md)
 
-## Comandos de exemplo (edite no `plugin.json`)
+A **declarative** plugin (no code): answers chat commands with a message, an on-screen notice or media.
 
-| Comando | O que faz |
+## Example commands (edit them in `plugin.json`)
+
+| Command | What it does |
 |---|---|
-| `!discord` | responde no chat o link do Discord e mostra o aviso na tela por 8 s |
-| `!redes` | responde no chat com as redes da live |
-| `!aviso <texto>` | mostra o texto como aviso grande no programa |
-| `oi` / `olá` | dá boas-vindas a quem chegou (cooldown de 45 s por pessoa) |
+| `!discord` | replies in chat with the Discord link and shows the notice on screen for 8 s |
+| `!redes` | replies in chat with the live's social links |
+| `!aviso <text>` | shows the text as a large notice on the program |
+| `oi` / `olá` | welcomes whoever arrives (45 s cooldown per person) |
 
-## Como personalizar
+## How to customize
 
-Cada item de `rules` tem:
+Each item in `rules` has:
 
-- `on`: `chat.comando` (com `comando`), `chat.regex` (com `padrao`) ou `chat.contem` (com `texto`);
-- `cooldownSeg`: intervalo mínimo por pessoa (evita spam);
-- `do`: lista de ações — `chat.send`, `overlay.show`, `media.play`, `sound.play`.
+- `on`: `chat.comando` (with `comando`), `chat.regex` (with `padrao`) or `chat.contem` (with `texto`);
+- `cooldownSeg`: minimum interval per person (prevents spam);
+- `do`: list of actions — `chat.send`, `overlay.show`, `media.play`, `sound.play`.
 
-Variáveis disponíveis no texto: `{{usuario}}`, `{{texto}}`, `{{arg1}}`, `{{arg2}}`, `{{rede}}`.
+Variables available in the text: `{{usuario}}`, `{{texto}}`, `{{arg1}}`, `{{arg2}}`, `{{rede}}`.
 
-## Permissões
+## Permissions
 
-- `events:chat` — ler as mensagens (necessária para reagir);
-- `chat:send` — responder no chat;
-- `overlay:show` — desenhar o aviso no programa.
+- `events:chat` — read messages (required to react);
+- `chat:send` — reply in chat;
+- `overlay:show` — draw the notice on the program.
 
-Licença: AGPL-3.0-only (parte do CastDeck).
+License: AGPL-3.0-only (part of CastDeck).

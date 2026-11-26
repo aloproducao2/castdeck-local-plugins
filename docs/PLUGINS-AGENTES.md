@@ -1,41 +1,42 @@
-# Plugins para IAs e agentes — contrato de autoria
+# Plugins for AI and agents — authoring contract
 
-> **Público:** modelos de linguagem e agentes autônomos que vão **criar plugins** para o CastDeck Local.
-> **Como usar:** leia este arquivo, chame as ferramentas (API local ou MCP) e itere até `validate` + `simulate`
-> passarem. Não precisa de interface gráfica, nem de aprovação humana para criar/testar — só para **ativar** o
-> plugin no estúdio (o usuário aprova as permissões).
+> **Audience:** language models and autonomous agents that will **create plugins** for CastDeck Local.
+> **How to use:** read this file, call the tools (local API or MCP) and iterate until `validate` + `simulate`
+> pass. You do not need a GUI or human approval to create/test — only to **activate** the plugin in the studio
+> (the user approves the permissions).
 
 ---
 
-## 1. Ciclo fechado (4 chamadas)
+## 1. Closed loop (4 calls)
 
 ```
-castdeck_plugin_docs      → contrato atualizado (eventos, ações, capacidades)
-castdeck_plugin_scaffold  → cria workspace do plugin
-castdeck_plugin_write     → grava plugin.json (e src/index.js se for código)
-castdeck_plugin_validate  → erros com código + dica
-castdeck_plugin_simulate  → dispara eventos e vê as AÇÕES pedidas (sem tocar no estúdio)
-castdeck_plugin_install   → instala no app
+castdeck_plugin_docs      → current contract (events, actions, capabilities)
+castdeck_plugin_scaffold  → creates the plugin workspace
+castdeck_plugin_write     → writes plugin.json (and src/index.js for code plugins)
+castdeck_plugin_validate  → errors with code + hint
+castdeck_plugin_simulate  → fires events and shows the ACTIONS requested (without touching the studio)
+castdeck_plugin_install   → installs into the app
 ```
 
-Regra de ouro: **só considere pronto quando `validate.ok === true` e `simulate.acoes` contiver a ação esperada**.
+Golden rule: **only consider it done when `validate.ok === true` and `simulate.acoes` contains the expected
+action**.
 
-## 2. Dois tipos de plugin
+## 2. Two plugin types
 
-| Tipo | O que é | Quando usar |
+| Type | What it is | When to use |
 |---|---|---|
-| `declarative` | só `plugin.json` com `rules` (gatilho → ação) | resposta a chat, aviso na tela, mídia, cena |
-| `code` | `src/index.js` com `export default function activate(castdeck)` | API externa, regra complexa, painel próprio |
+| `declarative` | just `plugin.json` with `rules` (trigger → action) | chat replies, on-screen notice, media, scene |
+| `code` | `src/index.js` with `export default function activate(castdeck)` | external API, complex logic, custom panel |
 
-## 3. Formato do plugin declarativo
+## 3. Declarative plugin format
 
 ```json
 {
-  "id": "com.voce.meu-plugin",
-  "name": "Meu plugin",
-  "description": "O que ele faz em uma frase",
+  "id": "com.you.my-plugin",
+  "name": "My plugin",
+  "description": "What it does in one sentence",
   "version": "1.0.0",
-  "author": { "name": "Seu Nome" },
+  "author": { "name": "Your Name" },
   "license": "MIT",
   "engines": { "castdeck": ">=2.0.0", "api": 1 },
   "tier": "declarative",
@@ -46,81 +47,81 @@ Regra de ouro: **só considere pronto quando `validate.ok === true` e `simulate.
       "comando": "discord",
       "cooldownSeg": 30,
       "do": [
-        { "type": "chat.send", "texto": "Entre no Discord: discord.gg/exemplo" },
-        { "type": "overlay.show", "titulo": "Discord", "texto": "discord.gg/exemplo", "cor": "#5865f2", "segundos": 8 }
+        { "type": "chat.send", "texto": "Join our Discord: discord.gg/example" },
+        { "type": "overlay.show", "titulo": "Discord", "texto": "discord.gg/example", "cor": "#5865f2", "segundos": 8 }
       ]
     }
   ]
 }
 ```
 
-Gatilhos: `chat`, `chat.comando`, `chat.regex`, `chat.contem`, `doacao`, `stage.entrou`, `stage.saiu`,
+Triggers: `chat`, `chat.comando`, `chat.regex`, `chat.contem`, `doacao`, `stage.entrou`, `stage.saiu`,
 `scene.mudou`, `live.iniciou`, `live.encerrou`.
-Ações: `overlay.show`, `overlay.hide`, `chat.send`, `panel.open`, `sound.play`, `http.request`.
-Variáveis: `{{usuario}}`, `{{texto}}`, `{{arg1}}`, `{{arg2}}`, `{{rede}}`, `{{cena}}`, `{{fonte}}`, `{{titulo}}`.
+Actions: `overlay.show`, `overlay.hide`, `chat.send`, `panel.open`, `sound.play`, `http.request`.
+Variables: `{{usuario}}`, `{{texto}}`, `{{arg1}}`, `{{arg2}}`, `{{rede}}`, `{{cena}}`, `{{fonte}}`, `{{titulo}}`.
 
-## 4. Formato do plugin com código
+## 4. Code plugin format
 
 ```js
 // src/index.js
 export default function activate(castdeck) {
   castdeck.events.on('chat', async (m) => {
-    if (!/^!presenca\b/i.test(String(m.texto || ''))) return;
-    const { url } = castdeck.settings.get();       // só as chaves declaradas no manifesto
+    if (!/^!attendance\b/i.test(String(m.texto || ''))) return;
+    const { url } = castdeck.settings.get();       // only the keys declared in the manifest
     const r = await castdeck.http.post(url, { usuario: m.usuario });
-    castdeck.log('enviado: ' + r.result.status);
-    castdeck.overlay.show({ titulo: 'Presença', texto: m.usuario + ' registrado' }, 6);
+    castdeck.log('sent: ' + r.result.status);
+    castdeck.overlay.show({ titulo: 'Attendance', texto: m.usuario + ' checked in' }, 6);
   });
 }
 ```
 
-API injetada: `events.on(nome, fn)`, `overlay.show(spec, segundos)`, `overlay.hide()`, `chat.send(texto)`,
+Injected API: `events.on(name, fn)`, `overlay.show(spec, seconds)`, `overlay.hide()`, `chat.send(text)`,
 `http.get(url)`, `http.post(url, body)`, `sound.play(id)`, `panel.open()`, `settings.get()`,
-`settings.save(patch)`, `log(texto)`, `plugin.dataDir`.
+`settings.save(patch)`, `log(text)`, `plugin.dataDir`.
 
-## 5. Permissões (peça só o necessário)
+## 5. Permissions (ask only for what you need)
 
-| Permissão | Libera |
+| Permission | Unlocks |
 |---|---|
-| `events:chat` | ler mensagens do chat |
-| `events:stage` | saber quem está no palco e a cena |
-| `events:recording` | saber de gravações |
-| `overlay:show` | desenhar aviso no programa |
-| `panel:open` | abrir painel próprio |
-| `control:mixer` / `control:scene` / `control:playout` | mexer em áudio/cena/mídia |
-| `chat:send` | responder no chat do estúdio |
-| `network:<host>` | chamar um endereço (ex.: `network:https://api.exemplo.com`) |
-| `storage:own` | gravar na pasta do plugin |
+| `events:chat` | read chat messages |
+| `events:stage` | know who is on stage and the current scene |
+| `events:recording` | know about recordings |
+| `overlay:show` | draw a notice on the program |
+| `panel:open` | open a custom panel |
+| `control:mixer` / `control:scene` / `control:playout` | control audio/scene/media |
+| `chat:send` | reply in the studio chat |
+| `network:<host>` | call an address (e.g. `network:https://api.example.com`) |
+| `storage:own` | write to the plugin folder |
 
-As que exigem aprovação do usuário são mostradas em português na ativação. Se você usar uma ação sem a
-permissão correspondente, a ação **não roda** — e a simulação mostra a falta.
+Permissions that require user approval are shown in Portuguese at activation. If you use an action without
+the corresponding permission, the action **does not run** — and the simulation shows what is missing.
 
-## 6. Limites de segurança (o app recusa)
+## 6. Security limits (the app refuses)
 
-- sem `.exe`, `.dll`, `.node`, `.bat`, `.cmd`, `.ps1`, `.sh` no pacote;
-- sem `child_process`, `fs`, `net`, `http`, `dns` no código — use `castdeck.http`;
-- sem `eval` nem `new Function`;
-- rede somente nos hosts declarados em `network:`;
-- `license` SPDX e `engines.castdeck` compatível com o app;
-- pacote até 20 MB; um único `plugin.json` na raiz.
+- no `.exe`, `.dll`, `.node`, `.bat`, `.cmd`, `.ps1`, `.sh` in the package;
+- no `child_process`, `fs`, `net`, `http`, `dns` in the plugin code — use `castdeck.http`;
+- no `eval` or `new Function`;
+- network only to hosts declared in `network:`;
+- SPDX `license` and an `engines.castdeck` compatible with the app;
+- package up to 20 MB; a single `plugin.json` at the root.
 
-## 7. Erros mais comuns e como corrigir
+## 7. Common errors and how to fix them
 
-| Código | Causa | Correção |
+| Code | Cause | Fix |
 |---|---|---|
-| `ID_INVALIDO` | id sem ponto ou com maiúscula | `com.voce.nome` (minúsculo) |
-| `JSON_INVALIDO` | vírgula sobrando | valide o JSON antes de gravar |
-| `SEM_LICENCA` | falta `license` | `"MIT"` |
-| `ENGINES_INCOMPATIVEL` | `engines.castdeck` não cobre a versão | `">=2.0.0"` |
-| `PERMISSAO_INVALIDA` | ação sem permissão | adicione a permissão da ação |
-| `SEM_ENTRADA` | `entry` aponta para arquivo inexistente | crie `src/index.js` |
-| `CODIGO_BLOQUEADO` | `require('fs')`, `child_process`, `eval` | use a API `castdeck.*` |
-| `ARQUIVO_PROIBIDO` | binário no pacote | remova |
-| `SEM_REGRAS` | declarativo sem `rules` | adicione ao menos uma regra |
+| `ID_INVALIDO` | id without a dot or with uppercase | `com.you.name` (lowercase) |
+| `JSON_INVALIDO` | trailing comma | validate the JSON before writing |
+| `SEM_LICENCA` | missing `license` | `"MIT"` |
+| `ENGINES_INCOMPATIVEL` | `engines.castdeck` does not cover the version | `">=2.0.0"` |
+| `PERMISSAO_INVALIDA` | action without permission | add the action's permission |
+| `SEM_ENTRADA` | `entry` points to a missing file | create `src/index.js` |
+| `CODIGO_BLOQUEADO` | `require('fs')`, `child_process`, `eval` | use the `castdeck.*` API |
+| `ARQUIVO_PROIBIDO` | binary in the package | remove it |
+| `SEM_REGRAS` | declarative plugin without `rules` | add at least one rule |
 
-## 8. Acesso
+## 8. Access
 
-**API local** (o app roda em `http://localhost:3000`):
+**Local API** (the app runs at `http://localhost:3000`):
 - `GET  /api/plugins/author/docs`
 - `GET  /api/plugins/author/templates`
 - `POST /api/plugins/author/scaffold` `{ id, tier, name }`
@@ -130,19 +131,22 @@ permissão correspondente, a ação **não roda** — e a simulação mostra a f
 - `POST /api/plugins/author/install` `{ id }`
 - `GET  /api/plugins` · `GET /api/plugins/<id>/log`
 
-**MCP** (para o agente usar como ferramentas):
+**MCP** (for the agent to use as tools):
 ```bash
-node tools/mcp-plugins.mjs          # CASTDECK_URL padrão http://127.0.0.1:3000
+node tools/mcp-plugins.mjs          # CASTDECK_URL defaults to http://127.0.0.1:3000
 ```
-Ferramentas: `castdeck_plugin_docs`, `castdeck_plugin_templates`, `castdeck_plugin_list`,
-`castdeck_plugin_scaffold`, `castdeck_plugin_write`, `castdeck_plugin_validate`, `castdeck_plugin_simulate`,
-`castdeck_plugin_install`, `castdeck_plugin_status`, `castdeck_plugin_logs`, `castdeck_plugin_catalog`.
+Tools: `castdeck_plugin_docs`, `castdeck_plugin_templates`, `castdeck_plugin_list`,
+`castdeck_plugin_scaffold`, `castdeck_plugin_write`, `castdeck_plugin_validate`,
+`castdeck_plugin_simulate`, `castdeck_plugin_install`, `castdeck_plugin_status`,
+`castdeck_plugin_logs`, `castdeck_plugin_catalog`.
 
-## 9. Exemplo de raciocínio que funciona
+## 9. Example of reasoning that works
 
-1. **Objetivo:** “quando alguém entrar no palco, avisar e registrar num endpoint”.
-2. `docs` → confirme `stage.entrou` e `overlay.show`.
-3. `scaffold { tier: 'code' }` → escreva `plugin.json` com `permissions: ['events:stage','overlay:show','network:https://api.exemplo.com']` e `src/index.js`.
-4. `validate` → corrija o que vier com código/dica.
-5. `simulate { eventos: [{ tipo:'stage', acao:'entrou', fonteNome:'Fulano' }] }` → deve listar `overlay.show` e `http.request`.
-6. `install` → peça ao usuário para **ativar** e aprovar as permissões na aba Plugins.
+1. **Goal:** “when someone enters the stage, show a notice and register it at an endpoint”.
+2. `docs` → confirm `stage.entrou` and `overlay.show`.
+3. `scaffold { tier: 'code' }` → write `plugin.json` with
+   `permissions: ['events:stage','overlay:show','network:https://api.example.com']` and `src/index.js`.
+4. `validate` → fix whatever comes back with a code/hint.
+5. `simulate { eventos: [{ tipo:'stage', acao:'entrou', fonteNome:'Jane' }] }` → it should list `overlay.show`
+   and `http.request`.
+6. `install` → ask the user to **activate** it and approve the permissions in the Plugins tab.

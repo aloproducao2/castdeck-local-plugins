@@ -1,60 +1,71 @@
-# CastDeck — catálogo de plugins
+# CastDeck — plugin catalog
 
-Plugins **gratuitos** do [CastDeck Local](https://cast.flue.live) — o estúdio de transmissão ao vivo que roda
-100% no seu computador.
+[English](README.md) · [Português](README.pt-BR.md)
 
-O catálogo é **um índice JSON assinado** (`index.json`) servido pelo próprio app. Cada plugin é uma pasta com
-`plugin.json` (manifesto), código/recursos e `README.md`.
+Free plugins for [CastDeck Local](https://cast.flue.live) — the live streaming studio that runs entirely on
+your computer.
 
-## Plugins oficiais
+The catalog is a **signed JSON index** (`index.json`) served by the app itself. Each plugin is a folder with a
+`plugin.json` manifest, code/assets and a `README.md`.
 
-| Plugin | Tipo | O que faz |
+## Official plugins
+
+| Plugin | Type | What it does |
 |---|---|---|
-| **Cronômetro no ar** (`castdeck.timer`) | código (sandbox) | contagem regressiva na tela para intervalo/BRB, com painel próprio e `!timer 5` no chat (aviso persistente) |
-| **Comandos de chat** (`castdeck.chat-commands`) | declarativo | responde `!discord`, `!redes`, `!aviso` e `!ajuda`, dá boas-vindas a quem chega — com aviso na tela |
+| **On-air timer** (`castdeck.timer`) | code (sandboxed) | On-screen countdown for breaks, BRB or exam time; start it from its own panel or with `!timer 5` in chat, and viewers see the time ticking down. |
+| **Chat commands** (`castdeck.chat-commands`) | declarative | Answers `!discord`, `!redes` (socials), `!aviso <text>` (notice) and `!ajuda` (help), welcomes newcomers and posts an on-screen notice. |
 
-> O antigo `castdeck.luz` (tomada inteligente) saiu do catálogo; o exemplo de plugin com `network:` e evento
-> de palco virou fixture de teste no app. O cronômetro é o exemplo oficial de plugin com **painel** e
-> **overlay persistente**.
+> The old `castdeck.luz` (smart plug) left the catalog; the example plugin with `network:` and a stage event
+> became a test fixture in the app. The timer is the official example of a plugin with a **panel** and a
+> **persistent overlay**.
 
-## Instalar no app
+## Install in the app
 
-- **Do arquivo**: Ajustes → Plugins → *Instalar do arquivo* (`.cdplug`).
-- **Do catálogo**: a aba Plugins lê `https://cast.flue.live/plugins/index.json` e instala com um clique.
+- **From a file:** Settings → Plugins → *Install from file* (`.cdplug`).
+- **From the catalog:** the Plugins tab reads `https://cast.flue.live/plugins/index.json` and installs with
+  one click.
 
-## Para IAs e agentes
+## For AI and agents
 
-O catálogo é feito para autoria por IA: leia [AGENTS.md](AGENTS.md) e o contrato em [docs/PLUGINS-AGENTES.md](docs/PLUGINS-AGENTES.md), ou conecte as ferramentas MCP com
-CASTDECK_URL=http://127.0.0.1:3000 node tools/mcp-plugins.mjs (scaffold → write → validate → simulate → install).
+The catalog is built for AI authoring: read [AGENTS.md](AGENTS.md) and the contract in
+[docs/PLUGINS-AGENTES.md](docs/PLUGINS-AGENTES.md), or connect the MCP tools with:
 
-## Publicar um plugin (grátis)
-
-1. Copie uma pasta de `plugins/` como base (declarativo é só `plugin.json`; código tem `src/index.js`).
-2. Ajuste `id`, `name`, `version`, `license` e `permissions` (só o necessário).
-3. Abra um **PR**. O CI valida o manifesto, roda o scanner de segurança, empacota o `.cdplug` e atualiza o
-   índice assinado.
-4. Depois do merge, o plugin aparece no app.
-
-Regras: sem executáveis no pacote (`.exe`, `.dll`, `.node`), sem `child_process`/`fs` no código, rede apenas nos
-endereços declarados em `network:<endereço>`, licença obrigatória (SPDX) e `engines.castdeck` compatível.
-
-## Estrutura
-
-```
-index.json                    índice do catálogo (gerado)
-schema/plugin-v1.json         schema do manifesto
-sdk/                          tipos e exemplos para autores
-tools/build-index.mjs         gera o index.json (CI)
-plugins/<id>/plugin.json      manifesto
-plugins/<id>/src|ui|assets    código e recursos
-.github/workflows/index.yml   valida → empacota → assina → publica
+```bash
+CASTDECK_URL=http://127.0.0.1:3000 node tools/mcp-plugins.mjs
 ```
 
-## Segurança
+The workflow is **scaffold → write → validate → simulate → install**.
 
-Os plugins de código rodam **fora** do processo principal do CastDeck, em um processo separado, com permissões
-explícitas aprovadas por quem instala. O app mostra as permissões em linguagem clara e mantém um log de auditoria.
+## Publish a plugin (free)
 
-## Licença
+1. Copy a folder from `plugins/` as a base (declarative is just `plugin.json`; code has `src/index.js`).
+2. Set `id`, `name`, `version`, `license` and `permissions` (only what is needed).
+3. Open a **PR**. CI validates the manifest, runs the security scanner, packages the `.cdplug` and updates
+   the signed index.
+4. After the merge, the plugin appears in the app.
 
-Cada plugin declara a própria licença. Os oficiais estão em AGPL-3.0-only, como o CastDeck.
+Rules: no executables in the package (`.exe`, `.dll`, `.node`), no `child_process`/`fs` in the code, network
+access only to addresses declared with `network:<address>`, an SPDX license and a compatible
+`engines.castdeck`.
+
+## Structure
+
+```
+index.json                    catalog index (generated)
+schema/plugin-v1.json         manifest schema
+tools/build-index.mjs         builds index.json (CI)
+tools/cli.mjs                 init/test/pack/index/verify (offline)
+tools/mcp-plugins.mjs         MCP server (agent with the app open)
+plugins/<id>/plugin.json      manifest
+plugins/<id>/src|ui|assets    code and assets
+.github/workflows/index.yml   validate → package → sign → publish
+```
+
+## Security
+
+Code plugins run **outside** the CastDeck main process, in a separate process, with explicit permissions
+approved by whoever installs them. The app shows the permissions in plain language and keeps an audit log.
+
+## License
+
+Each plugin declares its own license. The official ones are AGPL-3.0-only, like CastDeck.
